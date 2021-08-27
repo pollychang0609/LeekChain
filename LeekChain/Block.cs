@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 
 namespace LeekChain
 {
@@ -14,14 +16,17 @@ namespace LeekChain
 
         public string Hash { get; set; }
 
-        public string Data { get; set; }
+        //public string Data { get; set; }
+        public IList<Transaction> Transactions { get; set; }
 
-        public Block(DateTime timeStamp, string previousHash, string data)
+        public int Nonce { get; set; } = 0;
+
+        public Block(DateTime timeStamp, string previousHash, IList<Transaction> transactions)
         {
             Index = 0;
             TimeStamp = timeStamp;
             PreviousHash = previousHash;
-            Data = data;
+            Transactions = transactions;
 
             Hash = CalculateHash();
         }
@@ -30,11 +35,21 @@ namespace LeekChain
         {
             SHA256 sha256 = SHA256.Create();
 
-            byte[] inputBytes = Encoding.ASCII.GetBytes($"{TimeStamp} {PreviousHash ?? string.Empty} {Data}");
+            byte[] inputBytes = Encoding.ASCII.GetBytes($"{TimeStamp} {PreviousHash ?? string.Empty} {JsonSerializer.Serialize(Transactions)} {Nonce}");
             byte[] outputBytes = sha256.ComputeHash(inputBytes);
 
 
             return Convert.ToBase64String(outputBytes);
+        }
+
+        public void Mine(int difficulty)
+        {
+            var leadingZero = new string('0', difficulty);
+            while (Hash == null || Hash.Substring(0, difficulty) != leadingZero)
+            {
+                Nonce++;
+                Hash = CalculateHash();
+            }
         }
 
     }

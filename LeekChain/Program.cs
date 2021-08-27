@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Text.Json;
 
 namespace LeekChain
@@ -8,14 +9,21 @@ namespace LeekChain
         static void Main(string[] args)
         {
             Blockchain leakCoin = new Blockchain();
+            leakCoin.CreateTransaction(new Transaction("Boss", "Diaos", 996));
+            leakCoin.ProcessPendingTransactions("Edi");
+            leakCoin.CreateTransaction(new Transaction("Diaos", "Boss", 100));
+            leakCoin.CreateTransaction(new Transaction("Diaos", "Boss", 200));
+            leakCoin.ProcessPendingTransactions("Edi");
+            leakCoin.CreateTransaction(new Transaction("Diaos", "Boss", 300));
+            leakCoin.ProcessPendingTransactions("Edi");
 
-            leakCoin.AddBlock(new Block(DateTime.UtcNow, null, "a quick brown fox"));
-            leakCoin.AddBlock(new Block(DateTime.UtcNow, null, "jumped over"));
-            leakCoin.AddBlock(new Block(DateTime.UtcNow, null, "a lazy dog"));
+            Console.WriteLine($"Boss: {leakCoin.GetBalance("Boss")}");
+            Console.WriteLine($"Diaos: {leakCoin.GetBalance("Diaos")}");
+            Console.WriteLine($"Edi: {leakCoin.GetBalance("Edi")}");
 
             var json = JsonSerializer.Serialize(leakCoin, new JsonSerializerOptions() { WriteIndented = true });
-
             Console.WriteLine(json);
+            Console.WriteLine($"Is Chain Valid: {leakCoin.IsValid()}");
             Console.ReadLine();
         }
     }
