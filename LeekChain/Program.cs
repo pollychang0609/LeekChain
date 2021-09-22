@@ -6,6 +6,11 @@ namespace LeekChain
 {
     class Program
     {
+        public static int Port { get; set; }
+        public static string Address { get; set; }
+
+        public static Blockchain CurrentChain { get; set; }
+
         static void Main(string[] args)
         {
             Blockchain leakCoin = new Blockchain();
